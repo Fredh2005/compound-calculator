@@ -1,0 +1,317 @@
+<title>Compound Contribution Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Fraunces:opsz,wght@9..144,400;9..144,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#0F1611; --panel:#141C17; --rule:#2A342C; --rule-2:#3A4A3D;
+  --bone:#E8E4D9; --bone-bright:#F4F1E8; --sage:#8A9585; --sage-dim:#5C665D;
+  --brass:#C9A85C; --brass-dim:#8A7538;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --display:'Fraunces',Georgia,'Times New Roman',serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--bone);font-family:var(--mono);
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:780px;margin:0 auto;padding:2.5rem 1.25rem 4rem}
+.eyebrow{font-size:.7rem;letter-spacing:.15em;color:var(--sage);margin-bottom:.6rem}
+h1{font-family:var(--display);font-size:clamp(1.6rem,5vw,2.1rem);font-weight:500;
+  margin:0;color:var(--bone-bright);letter-spacing:-.01em;text-wrap:balance}
+.head{border-bottom:1px solid var(--rule);padding-bottom:1.5rem;margin-bottom:2.25rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:1.5rem;margin-bottom:2rem}
+.lbl{font-size:.7rem;letter-spacing:.1em;color:var(--sage);margin-bottom:.4rem;
+  text-transform:uppercase}
+input[type=number]{background:transparent;border:0;border-bottom:1px solid var(--rule-2);
+  color:var(--bone);font-family:inherit;font-size:1rem;padding:3px 4px;width:100%}
+input[type=number]:focus-visible{outline:none;border-bottom-color:var(--brass)}
+.slider{margin-bottom:1.35rem}
+.slider .row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.5rem}
+.slider .val{font-size:.95rem;color:var(--brass);font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;
+  background:var(--rule-2);border-radius:0;margin:8px 0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;
+  background:var(--brass);border-radius:50%;cursor:pointer;border:0}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--brass);
+  border-radius:50%;cursor:pointer;border:0}
+input[type=range]:focus-visible{outline:2px solid var(--brass);outline-offset:4px}
+.mode{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem 1rem;
+  margin:0 0 1.75rem;padding-top:.25rem}
+.result{border:1px solid var(--brass);padding:1.75rem;margin-bottom:2rem;background:var(--panel)}
+.headline{font-family:var(--display);font-size:clamp(2.2rem,8vw,3rem);font-weight:500;
+  color:var(--brass);line-height:1;font-variant-numeric:tabular-nums lining-nums}
+.toggle{display:flex;gap:.5rem;margin-top:1rem}
+.toggle button{background:transparent;color:var(--sage);border:1px solid var(--brass);
+  padding:.35rem .85rem;font-family:inherit;font-size:.75rem;cursor:pointer}
+.toggle button[aria-pressed=true]{background:var(--brass);color:var(--ground);font-weight:500}
+.toggle button:focus-visible{outline:2px solid var(--bone);outline-offset:2px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem;
+  padding-top:1.25rem;border-top:1px solid var(--rule)}
+.split .v{font-size:1.1rem;margin-top:.2rem;font-variant-numeric:tabular-nums}
+.chartwrap{margin-bottom:2rem}
+.legend{display:flex;flex-wrap:wrap;gap:1.5rem;font-size:.75rem;color:var(--sage);margin-top:.6rem}
+.readout{font-size:.78rem;color:var(--bone);min-height:1.5em;margin-top:.5rem;
+  font-variant-numeric:tabular-nums}
+.warn{border-left:2px solid var(--brass-dim);padding:.6rem .9rem;margin-bottom:1.5rem;
+  font-size:.78rem;color:var(--brass);background:var(--panel)}
+.foot{font-size:.75rem;color:var(--sage-dim);border-top:1px solid var(--rule);
+  padding-top:1rem;line-height:1.7}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <div class="head">
+    <div class="eyebrow">COMPOUND CONTRIBUTION LEDGER</div>
+    <h1>What your contributions become</h1>
+  </div>
+
+  <div class="grid">
+    <div><div class="lbl"><label for="currentAge">Starting age</label></div>
+      <input type="number" id="currentAge" value="20" min="0" max="99"></div>
+    <div><div class="lbl"><label for="retireAge">Age at withdrawal</label></div>
+      <input type="number" id="retireAge" value="65" min="1" max="100"></div>
+    <div><div class="lbl"><label for="contribution">Annual contribution (£)</label></div>
+      <input type="number" id="contribution" value="10000" step="500" min="0"></div>
+    <div><div class="lbl"><label for="stopAge">Stop contributing at age</label></div>
+      <input type="number" id="stopAge" value="65" min="0" max="100"></div>
+  </div>
+
+  <div class="slider">
+    <div class="row"><span class="lbl" style="margin:0">Expected annual return</span>
+      <span class="val" id="returnVal">7%</span></div>
+    <input type="range" id="returnRate" min="0" max="20" step="0.5" value="7"
+           aria-label="Expected annual return, percent">
+  </div>
+  <div class="slider">
+    <div class="row"><span class="lbl" style="margin:0">Assumed inflation</span>
+      <span class="val" id="inflationVal">2.5%</span></div>
+    <input type="range" id="inflationRate" min="0" max="8" step="0.1" value="2.5"
+           aria-label="Assumed inflation, percent">
+  </div>
+
+  <div class="mode">
+    <span class="lbl" style="margin:0">Contributions</span>
+    <div class="toggle" style="margin:0">
+      <button id="btnFlat" aria-pressed="true">Flat cash</button>
+      <button id="btnRise" aria-pressed="false">Rise with inflation</button>
+    </div>
+  </div>
+
+  <div id="warn"></div>
+
+  <div class="result">
+    <div class="eyebrow" id="resultLabel"></div>
+    <div class="headline" id="headline">£0</div>
+    <div class="toggle">
+      <button id="btnNominal" aria-pressed="true">Nominal</button>
+      <button id="btnReal" aria-pressed="false">Today's money</button>
+    </div>
+    <div class="split">
+      <div><div class="lbl">Contributed</div><div class="v" id="contributed">£0</div></div>
+      <div><div class="lbl">Growth</div><div class="v" id="growth">£0</div></div>
+    </div>
+  </div>
+
+  <div class="chartwrap">
+    <div class="lbl">Growth over time</div>
+    <svg id="chart" width="100%" height="200" viewBox="0 0 700 200"
+         preserveAspectRatio="none" role="img" aria-labelledby="chartTitle">
+      <title id="chartTitle">Total balance against total contributions, by age</title>
+    </svg>
+    <div class="legend">
+      <span><span style="color:var(--brass)">—</span> Total balance</span>
+      <span><span style="color:var(--rule-2)">—</span> Contributed</span>
+    </div>
+    <div class="readout" id="readout">Hover the chart to read any year.</div>
+  </div>
+
+  <div class="foot">
+    <p style="margin:0 0 .8rem"><strong style="color:var(--sage);font-weight:500">
+    Flat cash</strong> pays the same number of pounds every year. Over decades
+    inflation quietly shrinks what that buys — £10,000 a year from age 20 is worth
+    about £3,300 in today's money by 65, so the later payments do far less work
+    than the early ones.</p>
+
+    <p style="margin:0 0 .8rem"><strong style="color:var(--sage);font-weight:500">
+    Rise with inflation</strong> uprates the payment each year by the inflation
+    rate above, holding its buying power steady. This is usually the more realistic
+    model, since contributions tend to track earnings. It raises the
+    <em>contributed</em> figure a lot, because you are genuinely paying in more
+    pounds — the fair comparison between the two modes is the today's-money number,
+    not the nominal one.</p>
+
+    <p style="margin:0">Contributions go in at the start of each year, so every
+    payment earns a full year of return, and the rate is applied as a constant
+    annual figure. Real markets never deliver the same return twice, and the order
+    of good and bad years changes where you land — treat this as the shape of
+    compounding, not a forecast. Not financial advice.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  var el = function(id){ return document.getElementById(id); };
+  var state = { real:false, escalate:false };
+  var rows = [];
+
+  var gbp = new Intl.NumberFormat('en-GB',
+    { style:'currency', currency:'GBP', maximumFractionDigits:0 });
+
+  // An empty box reads as 0 through Number(), which silently turns a blank
+  // starting age into age zero and a 65-year run. Treat blank as the default.
+  function num(id, fallback, lo, hi){
+    var raw = String(el(id).value).trim();
+    if (raw === '') return fallback;
+    var v = Number(raw);
+    if (!isFinite(v)) return fallback;
+    if (lo !== undefined) v = Math.max(lo, v);
+    if (hi !== undefined) v = Math.min(hi, v);
+    return v;
+  }
+
+  function compute(){
+    var currentAge = num('currentAge',20,0,120),
+        retireAge  = num('retireAge',65,0,120),
+        contrib    = Math.max(0, num('contribution',0)),
+        stopAge    = num('stopAge',65,0,120),
+        r          = num('returnRate',7,0,100)/100,
+        infl       = num('inflationRate',2.5,0,100)/100;
+
+    var years = Math.max(0, retireAge - currentAge);
+    var stop  = Math.min(Math.max(stopAge, currentAge), retireAge);
+
+    rows = [];
+    var balance = 0, contributed = 0;
+    for (var y = 1; y <= years; y++){
+      var age = currentAge + y;
+      var paying = age <= stop;
+      // Optionally uprate the payment so it holds its buying power.
+      var thisYear = paying
+        ? (state.escalate ? contrib * Math.pow(1 + infl, y - 1) : contrib)
+        : 0;
+      // Money goes in at the START of the year, so it earns that year's return.
+      balance = (balance + thisYear) * (1 + r);
+      contributed += thisYear;
+      rows.push({ year:y, age:age, balance:balance, contributed:contributed,
+                  growth: balance - contributed,
+                  real: balance / Math.pow(1 + infl, y) });
+    }
+    return { years:years, retireAge:retireAge, currentAge:currentAge, stop:stop, r:r };
+  }
+
+  function render(){
+    var m = compute();
+    var last = rows.length ? rows[rows.length-1]
+                           : { balance:0, contributed:0, growth:0, real:0 };
+
+    el('returnVal').textContent = num('returnRate',7,0,100) + '%';
+    el('inflationVal').textContent = num('inflationRate',2.5,0,100) + '%';
+
+    var payingYears = Math.max(0, m.stop - m.currentAge);
+    el('resultLabel').textContent = m.years > 0
+      ? 'BALANCE AT AGE ' + m.retireAge + ' · CONTRIBUTING ' + payingYears +
+        ' OF ' + m.years + ' YEARS'
+      : 'SET A WITHDRAWAL AGE ABOVE YOUR STARTING AGE';
+
+    el('headline').textContent = gbp.format(state.real ? last.real : last.balance);
+    el('contributed').textContent = gbp.format(last.contributed);
+    el('growth').textContent = gbp.format(last.growth);
+    el('btnNominal').setAttribute('aria-pressed', String(!state.real));
+    el('btnReal').setAttribute('aria-pressed', String(state.real));
+    el('btnFlat').setAttribute('aria-pressed', String(!state.escalate));
+    el('btnRise').setAttribute('aria-pressed', String(state.escalate));
+
+    var rate = num('returnRate',7,0,100);
+    el('warn').innerHTML = rate > 12
+      ? '<div class="warn">' + rate + '% a year sustained for decades is far above what ' +
+        'global equities have delivered historically (roughly 5–8% after inflation). ' +
+        'The number below is arithmetic, not an expectation.</div>'
+      : '';
+
+    drawChart();
+  }
+
+  function drawChart(){
+    var svg = el('chart');
+    while (svg.childNodes.length > 1) svg.removeChild(svg.lastChild);
+    if (rows.length < 2){
+      el('readout').textContent = rows.length
+        ? 'A single year has nothing to plot against.'
+        : 'Set a withdrawal age above your starting age.';
+      return;
+    }
+    el('readout').textContent = 'Hover the chart to read any year.';
+
+    var W = 700, H = 200, PAD_B = 22, TOP = 8;
+    var maxV = Math.max.apply(null, rows.map(function(d){ return d.balance; })) || 1;
+    var n = rows.length;
+    // n - 1 can be zero with a one-year span; guarded by the length check above.
+    var x = function(i){ return (i / (n - 1)) * W; };
+    var y = function(v){ return (H - PAD_B) - (v / maxV) * (H - PAD_B - TOP); };
+
+    var NS = 'http://www.w3.org/2000/svg';
+    function poly(key, stroke, width){
+      var p = document.createElementNS(NS,'polyline');
+      p.setAttribute('points', rows.map(function(d,i){ return x(i)+','+y(d[key]); }).join(' '));
+      p.setAttribute('fill','none');
+      p.setAttribute('stroke', stroke);
+      p.setAttribute('stroke-width', width);
+      p.setAttribute('stroke-linejoin','round');
+      p.setAttribute('vector-effect','non-scaling-stroke');
+      svg.appendChild(p);
+    }
+
+    // Age labels along the bottom
+    var ticks = [0, Math.floor((n-1)/2), n-1];
+    ticks.forEach(function(i){
+      var t = document.createElementNS(NS,'text');
+      t.setAttribute('x', Math.min(Math.max(x(i), 14), W-14));
+      t.setAttribute('y', H - 6);
+      t.setAttribute('fill','#5C665D');
+      t.setAttribute('font-size','11');
+      t.setAttribute('font-family','monospace');
+      t.setAttribute('text-anchor', i===0 ? 'start' : i===n-1 ? 'end' : 'middle');
+      t.textContent = 'age ' + rows[i].age;
+      svg.appendChild(t);
+    });
+
+    poly('contributed', '#3A4A3D', 1.5);
+    poly('balance', '#C9A85C', 2);
+
+    var marker = document.createElementNS(NS,'line');
+    marker.setAttribute('stroke','#8A9585');
+    marker.setAttribute('stroke-width','1');
+    marker.setAttribute('y1', TOP);
+    marker.setAttribute('y2', H - PAD_B);
+    marker.setAttribute('opacity','0');
+    marker.setAttribute('vector-effect','non-scaling-stroke');
+    svg.appendChild(marker);
+
+    svg.onpointermove = function(ev){
+      var box = svg.getBoundingClientRect();
+      var frac = (ev.clientX - box.left) / box.width;
+      var i = Math.round(frac * (n - 1));
+      i = Math.max(0, Math.min(n - 1, i));
+      var d = rows[i];
+      marker.setAttribute('x1', x(i)); marker.setAttribute('x2', x(i));
+      marker.setAttribute('opacity','1');
+      el('readout').textContent = 'Age ' + d.age + ' — balance ' + gbp.format(d.balance) +
+        ' · contributed ' + gbp.format(d.contributed) + ' · growth ' + gbp.format(d.growth);
+    };
+    svg.onpointerleave = function(){
+      marker.setAttribute('opacity','0');
+      el('readout').textContent = 'Hover the chart to read any year.';
+    };
+  }
+
+  ['currentAge','retireAge','contribution','stopAge','returnRate','inflationRate']
+    .forEach(function(id){ el(id).addEventListener('input', render); });
+  el('btnNominal').onclick = function(){ state.real = false; render(); };
+  el('btnReal').onclick = function(){ state.real = true; render(); };
+  el('btnFlat').onclick = function(){ state.escalate = false; render(); };
+  el('btnRise').onclick = function(){ state.escalate = true; render(); };
+
+  render();
+})();
+</script>
