@@ -1,6 +1,6 @@
 {
- "name": "Compound Contribution Ledger",
- "short_name": "Compound",
+ "name": "Compound Calculator",
+ "short_name": "Compound calc",
  "id": "/compound-calculator/",
  "start_url": "/compound-calculator/",
  "scope": "/compound-calculator/",
