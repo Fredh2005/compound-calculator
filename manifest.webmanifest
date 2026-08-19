@@ -1,0 +1,23 @@
+{
+ "name": "Compound Contribution Ledger",
+ "short_name": "Compound",
+ "id": "/compound-calculator/",
+ "start_url": "/compound-calculator/",
+ "scope": "/compound-calculator/",
+ "display": "standalone",
+ "background_color": "#0F1611",
+ "theme_color": "#C9A85C",
+ "icons": [
+  {
+   "src": "icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any maskable"
+  }
+ ]
+}
